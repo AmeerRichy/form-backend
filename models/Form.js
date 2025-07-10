@@ -4,6 +4,8 @@ const formSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true },
   message: { type: String }
-}, { timestamps: true });
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model('contactforms', formSchema);
+module.exports = mongoose.model('Form', formSchema);

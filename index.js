@@ -5,23 +5,34 @@ const cors = require('cors');
 require('dotenv').config();
 
 const Form = require('./models/Form');
+
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
+
+// ✅ CORS Fix for OPTIONS preflight
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
+}));
+
+// Handle OPTIONS preflight
+app.options('*', cors());
 
 // Middleware
-app.use(cors());
 app.use(bodyParser.json());
-app.use(express.static('public')); // Serve index.html + submissions.html
+app.use(express.static('public')); // Serve frontend files if any
 
-// MongoDB connection
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected'))
   .catch((err) => console.error('MongoDB error:', err));
 
-// Form Submission Route
+// ✅ Routes
+
+// POST: Receive form data
 app.post('/api/forms', async (req, res) => {
   const { name, email, message } = req.body;
-  console.log('Form Data:', req.body);
 
   if (!name || !email) {
     return res.status(400).json({ error: 'Name and Email are required.' });
@@ -29,8 +40,8 @@ app.post('/api/forms', async (req, res) => {
 
   try {
     const newForm = new Form({ name, email, message });
-    const saved = await newForm.save();
-    console.log('Saved to DB ✅', saved);
+    await newForm.save();
+    console.log('✅ Saved to DB:', newForm);
     res.status(201).json({ message: 'Form submitted successfully!' });
   } catch (error) {
     console.error('❌ Error submitting form:', error);
@@ -38,20 +49,20 @@ app.post('/api/forms', async (req, res) => {
   }
 });
 
-// ✅ Submissions Fetch Route
+// GET: Return all form data
 app.get('/api/forms', async (req, res) => {
   try {
     const forms = await Form.find().sort({ createdAt: -1 });
     res.json(forms);
-  } catch (err) {
-    console.error('Error fetching forms:', err);
-    res.status(500).json({ error: 'Server error' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch forms' });
   }
 });
 
-// Serve index.html on root
+// Root route
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/public/index.html');
+  res.send('✅ Form Backend Running');
 });
 
+// Start server
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
