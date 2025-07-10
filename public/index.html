@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Contact Form</title>
+</head>
+<body>
+  <h1>Contact Us</h1>
+  <form id="contactForm">
+    <input type="text" name="name" placeholder="Enter full name" required /><br/><br/>
+    <input type="email" name="email" placeholder="Enter email" required /><br/><br/>
+    <textarea name="message" placeholder="Write your message"></textarea><br/><br/>
+    <button type="submit">Submit</button>
+  </form>
+
+  <p id="response"></p>
+
+  <br/>
+  <a href="submissions.html">📄 View Submissions</a>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const data = {
+        name: form.name.value,
+        email: form.email.value,
+        message: form.message.value,
+      };
+
+      const res = await fetch('/api/forms', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      document.getElementById('response').innerText = result.message || result.error;
+      form.reset();
+    });
+  </script>
+</body>
+</html>

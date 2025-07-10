@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submissions</title>
+  <style>
+    table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+      padding: 6px 12px;
+    }
+    table {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>All Submissions</h1>
+  <a href="index.html">⬅️ Back to Form</a>
+
+  <table id="formTable">
+    <thead>
+      <tr><th>Name</th><th>Email</th><th>Message</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    async function loadForms() {
+      try {
+        const res = await fetch('/api/forms');
+        const data = await res.json();
+
+        const tbody = document.querySelector('#formTable tbody');
+        tbody.innerHTML = '';
+
+        data.forEach(form => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${form.name}</td>
+            <td>${form.email}</td>
+            <td>${form.message || ''}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Failed to load forms:', err);
+      }
+    }
+
+    window.onload = loadForms;
+  </script>
+</body>
+</html>
