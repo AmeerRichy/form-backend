@@ -2,9 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-require('dotenv').config();
 
-const Form = require('./models/Form');
+const Form = require('./models/Form'); // Make sure this file exists
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -23,10 +22,12 @@ app.options('*', cors());
 app.use(bodyParser.json());
 app.use(express.static('public')); // Serve frontend files if any
 
-// ✅ MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected'))
-  .catch((err) => console.error('MongoDB error:', err));
+// ✅ MongoDB Connection (hardcoded URI)
+mongoose.connect('mongodb+srv://ameerjazz123:ameer123@cluster0.rhd2wcq.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0', {  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('✅ MongoDB connected'))
+.catch((err) => console.error('❌ MongoDB error:', err));
 
 // ✅ Routes
 
@@ -65,4 +66,4 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
